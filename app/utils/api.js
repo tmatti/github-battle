@@ -12,7 +12,6 @@ function getErrorMsg(message, username){
   return message
 }
 
-
 function getProfile(username) {
   return fetch(`https://api.github.com/users/${username}${params}`)
     .then((res) => res.json())
