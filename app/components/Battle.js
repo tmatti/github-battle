@@ -70,7 +70,7 @@ class PlayerInput extends React.Component {
           <button
             className='btn dark-btn'
             type='submit'
-            disable={!this.state.username}
+            disabled={!this.state.username}
           >
             Submit
           </button>
