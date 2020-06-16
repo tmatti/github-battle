@@ -1,21 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {fetchPopularRepos} from '../utils/api'
-import { FaUser, FaStar, FaCodeBranch, FaExclamationTriangle, FaCode } from 'react-icons/fa'
+import { fetchPopularRepos } from '../utils/api'
+import { FaUser, FaStar, FaCodeBranch, FaExclamationTriangle } from 'react-icons/fa'
 import Card from './Card'
 import Loading from './Loading'
 import Tooltip from './Tooltip'
 
-function LanguagesNav({selected, onUpdateLanguage}){
-  const languages = ['All', 'Elixir', 'JavaScript', 'Ruby', 'Java', 'CSS', 'Python']
+function LanguagesNav ({ selected, onUpdateLanguage }) {
+  const languages = ['All', 'JavaScript', 'Ruby', 'Java', 'CSS', 'Python']
 
   return (
     <ul className='flex-center'>
       {languages.map((language) => (
         <li key={language}>
-          <button 
+          <button
             className='btn-clear nav-link'
-            style={language === selected ? {color: 'rgb(187, 46, 31)'} : null}
+            style={language === selected ? { color: 'rgb(187, 46, 31)' } : null}
             onClick={() => onUpdateLanguage(language)}>
             {language}
           </button>
@@ -30,7 +30,7 @@ LanguagesNav.propTypes = {
   onUpdateLanguage: PropTypes.func.isRequired
 }
 
-function ReposGrid({repos}) {
+function ReposGrid ({ repos }) {
   return (
     <ul className='grid space-around'>
       {repos.map((repo, index) => {
@@ -86,49 +86,45 @@ export default class Popular extends React.Component {
     this.state = {
       selectedLanguage: 'All',
       repos: {},
-      error: null
+      error: null,
     }
 
     this.updateLanguage = this.updateLanguage.bind(this)
     this.isLoading = this.isLoading.bind(this)
   }
-
-  componentDidMount() {
+  componentDidMount () {
     this.updateLanguage(this.state.selectedLanguage)
   }
-
-  updateLanguage(selectedLanguage) {
+  updateLanguage (selectedLanguage) {
     this.setState({
       selectedLanguage,
-      error: null
+      error: null,
     })
 
-    if(!this.state.repos[selectedLanguage]){
+    if (!this.state.repos[selectedLanguage]) {
       fetchPopularRepos(selectedLanguage)
-      .then((data) => {
-        this.setState(({ repos }) => ({
-          repos: {
-            ...repos,
-            [selectedLanguage]: data
-          }
-        }))
-      })
-      .catch((error) => {
-        console.warn('Error fetching repos: ', error)
-
-        this.setState({
-          error: 'There was an error fetching the repositories.'
+        .then((data) => {
+          this.setState(({ repos }) => ({
+            repos: {
+              ...repos,
+              [selectedLanguage]: data
+            }
+          }))
         })
-      })
-    }    
-  }
+        .catch(() => {
+          console.warn('Error fetching repos: ', error)
 
+          this.setState({
+            error: `There was an error fetching the repositories.`
+          })
+        })
+    }
+  }
   isLoading() {
     const { selectedLanguage, repos, error } = this.state
 
     return !repos[selectedLanguage] && error === null
   }
-
   render() {
     const { selectedLanguage, repos, error } = this.state
 
@@ -139,7 +135,7 @@ export default class Popular extends React.Component {
           onUpdateLanguage={this.updateLanguage}
         />
 
-        {this.isLoading() && <Loading text="Fetching Repos" />}
+        {this.isLoading() && <Loading text='Fetching Repos' />}
 
         {error && <p className='center-text error'>{error}</p>}
 
