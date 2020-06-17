@@ -5,8 +5,10 @@ import Card from './Card'
 import PropTypes from 'prop-types'
 import Loading from './Loading'
 import Tooltip from './Tooltip'
+import queryString from 'query-string'
+import { Link } from 'react-router-dom'
 
-function ProfileList({ profile }) {
+function ProfileList ({ profile }) {
   return (
     <ul className='card-list'>
       <li>
@@ -42,7 +44,7 @@ function ProfileList({ profile }) {
 }
 
 ProfileList.propTypes = {
-  profile: PropTypes.object.isRequired, 
+  profile: PropTypes.object.isRequired,
 }
 
 export default class Results extends React.Component {
@@ -56,11 +58,10 @@ export default class Results extends React.Component {
       loading: true
     }
   }
+  componentDidMount () {
+    const { playerOne, playerTwo } = queryString.parse(this.props.location.search)
 
-  componentDidMount() {
-    const {playerOne, playerTwo, onReset} = this.props
-
-    battle([playerOne, playerTwo])
+    battle([ playerOne, playerTwo ])
       .then((players) => {
         this.setState({
           winner: players[0],
@@ -68,24 +69,24 @@ export default class Results extends React.Component {
           error: null,
           loading: false
         })
-      })
-      .catch(({message}) => {
+      }).catch(({ message }) => {
         this.setState({
           error: message,
           loading: false
         })
       })
   }
+  render() {
+    const { winner, loser, error, loading } = this.state
 
-  render(){
-    const {winner, loser, error, loading} = this.state
-
-    if(loading){
-      return <Loading text="Battling" />
+    if (loading === true) {
+      return <Loading text='Battling' />
     }
 
-    if(error){
-      return <p className='center-text error'>{error}</p>
+    if (error) {
+      return (
+        <p className='center-text error'>{error}</p>
+      )
     }
 
     return (
@@ -98,9 +99,8 @@ export default class Results extends React.Component {
             href={winner.profile.html_url}
             name={winner.profile.login}
           >
-            <ProfileList profile={winner.profile} />
+            <ProfileList profile={winner.profile}/>
           </Card>
-
           <Card
             header={winner.score === loser.score ? 'Tie' : 'Loser'}
             subheader={`Score: ${loser.score.toLocaleString()}`}
@@ -108,21 +108,15 @@ export default class Results extends React.Component {
             name={loser.profile.login}
             href={loser.profile.html_url}
           >
-            <ProfileList profile={loser.profile} />
+            <ProfileList profile={loser.profile}/>
           </Card>
         </div>
-        <button
-          onClick={this.props.onReset}
+        <Link
+          to='/battle'
           className='btn dark-btn btn-space'>
             Reset
-        </button>
+        </Link>
       </React.Fragment>
     )
   }
 }
-
-Results.propTypes = {
-  playerOne: PropTypes.string.isRequired,
-  playerTwo: PropTypes.string.isRequired,
-  onReset: PropTypes.func.isRequired
-} 
